@@ -58,21 +58,6 @@ def cancel(update: Update, context: CallbackContext):
 
 
 def main() -> None:
-    CHOOSING, ANSWERING = range(2)
-    custom_keyboard = [['Новый вопрос', 'Сдаться'],
-                       ['Мой счёт']]
-    reply_markup = ReplyKeyboardMarkup(custom_keyboard)
-    logging.basicConfig(
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        level=logging.INFO
-    )
-    logger = logging.getLogger(__name__)
-    updater = Updater(os.environ['TELEGRAM_TOKEN'])
-    questions_for_quiz = get_questions_for_qiuz('./quiz_questions/lag01ch.txt')
-    redis_db = redis.Redis(host=os.environ['REDIS_HOST'],
-                           port=os.environ['REDIS_PORT'],
-                           db=0,
-                           password=os.environ['REDIS_PASSWORD'])
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler("help", help_command))
     conv_handler = ConversationHandler(
@@ -98,4 +83,19 @@ def main() -> None:
 
 
 if __name__ == '__main__':
+    CHOOSING, ANSWERING = range(2)
+    custom_keyboard = [['Новый вопрос', 'Сдаться'],
+                       ['Мой счёт']]
+    reply_markup = ReplyKeyboardMarkup(custom_keyboard)
+    logging.basicConfig(
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        level=logging.INFO
+    )
+    logger = logging.getLogger(__name__)
+    updater = Updater(os.environ['TELEGRAM_TOKEN'])
+    questions_for_quiz = get_questions_for_qiuz('./quiz_questions/lag01ch.txt')
+    redis_db = redis.Redis(host=os.environ['REDIS_HOST'],
+                           port=os.environ['REDIS_PORT'],
+                           db=0,
+                           password=os.environ['REDIS_PASSWORD'])
     main()

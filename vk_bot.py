@@ -42,11 +42,6 @@ def handle_solution_attempt(event, vk_api):
 
 
 def main():
-    questions_for_quiz = get_questions_for_qiuz('./quiz_questions/lag01ch.txt')
-    redis_db = redis.Redis(host=os.environ['REDIS_HOST'],
-                           port=os.environ['REDIS_PORT'],
-                           db=0,
-                           password=os.environ['REDIS_PASSWORD'])
     vk_session = vk.VkApi(token=os.environ['VK_TOKEN'])
     vk_api = vk_session.get_api()
     keyboard = VkKeyboard()
@@ -66,4 +61,9 @@ def main():
                 handle_solution_attempt(event, vk_api)
 
 if __name__ == "__main__":
+    questions_for_quiz = get_questions_for_qiuz('./quiz_questions/lag01ch.txt')
+    redis_db = redis.Redis(host=os.environ['REDIS_HOST'],
+                           port=os.environ['REDIS_PORT'],
+                           db=0,
+                           password=os.environ['REDIS_PASSWORD'])
     main()
