@@ -8,7 +8,7 @@ from vk_api.longpoll import VkLongPoll, VkEventType
 
 
 def send_message(user_id, message):
-    vk_api.messages.send(
+    vk.messages.send(
         user_id=user_id,
         message=message,
         keyboard=keyboard.get_keyboard(),
