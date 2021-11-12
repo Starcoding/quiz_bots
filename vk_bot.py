@@ -42,7 +42,7 @@ def handle_solution_attempt(event, vk_api):
 
 
 if __name__ == "__main__":
-    questions_for_quiz = get_questions_for_qiuz('./quiz_questions/lag01ch.txt')
+    questions_for_quiz = get_questions_for_qiuz(os.environ['PATH_TO_FILE'])
     redis_db = redis.Redis(host=os.environ['REDIS_HOST'],
                            port=os.environ['REDIS_PORT'],
                            db=0,

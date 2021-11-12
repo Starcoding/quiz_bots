@@ -2,8 +2,6 @@ def get_questions_for_qiuz(filename):
     questions = []
     with open(filename, 'r', encoding='KOI8-R') as quiz_file:
         quiz_text = quiz_file.read()
-    current_question_position = quiz_text.find('Вопрос')
-    last_question_position = quiz_text.rfind('Вопрос ')
     while quiz_text.find('Вопрос') > 0:
         question_start = quiz_text.find('Вопрос')
         colon_position_for_question = quiz_text.find(':\n', question_start) + 2
