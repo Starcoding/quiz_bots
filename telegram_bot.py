@@ -9,6 +9,9 @@ from telegram.ext import (Updater, CommandHandler, MessageHandler,
                           CallbackContext, ConversationHandler)
 
 
+logger = logging.getLogger(__name__)
+
+
 def start(update: Update, context: CallbackContext):
     """Send a message when the command /start is issued."""
     update.message.reply_text('Привет! Я бот для викторин!',
@@ -55,7 +58,21 @@ def cancel(update: Update, context: CallbackContext):
     return ConversationHandler.END
 
 
-def main() -> None:
+if __name__ == '__main__':
+    logging.basicConfig(
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        level=logging.INFO
+    )
+    CHOOSING, ANSWERING = range(2)
+    custom_keyboard = [['Новый вопрос', 'Сдаться'],
+                       ['Мой счёт']]
+    reply_markup = ReplyKeyboardMarkup(custom_keyboard)
+    updater = Updater(os.environ['TELEGRAM_TOKEN'])
+    questions_for_quiz = get_questions_for_qiuz(os.environ['PATH_TO_FILE'])
+    redis_db = redis.Redis(host=os.environ['REDIS_HOST'],
+                           port=os.environ['REDIS_PORT'],
+                           db=0,
+                           password=os.environ['REDIS_PASSWORD'])
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler("help", help_command))
     conv_handler = ConversationHandler(
@@ -78,22 +95,3 @@ def main() -> None:
     dispatcher.add_handler(conv_handler)
     updater.start_polling()
     updater.idle()
-
-
-if __name__ == '__main__':
-    CHOOSING, ANSWERING = range(2)
-    custom_keyboard = [['Новый вопрос', 'Сдаться'],
-                       ['Мой счёт']]
-    reply_markup = ReplyKeyboardMarkup(custom_keyboard)
-    logging.basicConfig(
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        level=logging.INFO
-    )
-    logger = logging.getLogger(__name__)
-    updater = Updater(os.environ['TELEGRAM_TOKEN'])
-    questions_for_quiz = get_questions_for_qiuz(os.environ['PATH_TO_FILE'])
-    redis_db = redis.Redis(host=os.environ['REDIS_HOST'],
-                           port=os.environ['REDIS_PORT'],
-                           db=0,
-                           password=os.environ['REDIS_PASSWORD'])
-    main()
