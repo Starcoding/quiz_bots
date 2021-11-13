@@ -11,7 +11,6 @@ from telegram.ext import (Updater, CommandHandler, MessageHandler,
 
 def start(update: Update, context: CallbackContext):
     """Send a message when the command /start is issued."""
-    user = update.effective_user
     update.message.reply_text('Привет! Я бот для викторин!',
                               reply_markup=reply_markup)
     return CHOOSING
@@ -25,14 +24,14 @@ def help_command(update: Update, context: CallbackContext) -> None:
 
 def handle_new_question_request(update: Update, context: CallbackContext):
     question = random.choice(questions_for_quiz)
-    redis_db.set('tg-'+str(update.message.from_user['id']),
+    redis_db.set(f'tg-{str(update.message.from_user["id"])}',
                  str(question['answer']))
     update.message.reply_text(f'Новый вопрос:\n{question["question"]}')
     return ANSWERING
 
 
 def handle_solution_attempt(update: Update, context: CallbackContext):
-    answer = redis_db.get('tg-'+str(update.message.from_user['id'])).decode("utf-8")
+    answer = redis_db.get(f'tg-{str(update.message.from_user["id"])}').decode("utf-8")
     breaking_points = ['.', '(', '-']
     for breaking_point in breaking_points:
         if breaking_point in answer:
@@ -41,13 +40,12 @@ def handle_solution_attempt(update: Update, context: CallbackContext):
         update.message.reply_text('Правильно! Поздравляю! Для следующего вопроса\
                                   нажми «Новый вопрос»')
         return CHOOSING
-    else:
-        update.message.reply_text('Неправильно, пробуй ещё')
-        return ANSWERING
+    update.message.reply_text('Неправильно, пробуй ещё')
+    return ANSWERING
 
 
 def handle_give_up(update: Update, context: CallbackContext) -> None:
-    answer = redis_db.get(update.message.from_user['id']).decode("utf-8")
+    answer = redis_db.get(f'tg-{update.message.from_user["id"]}').decode("utf-8")
     update.message.reply_text(f'Правильный ответ был:\n{answer}')
     handle_new_question_request(update, context)
 

@@ -18,18 +18,18 @@ def send_message(user_id, message):
 
 def send_new_question(event, vk_api):
     question = random.choice(questions_for_quiz)
-    redis_db.set('vk-'+str(event.user_id), str(question['answer']))
+    redis_db.set(f'vk-{str(event.user_id)}', str(question['answer']))
     send_message(event.user_id, f'Новый вопрос:\n{question["question"]}')
 
 
 def give_up(event, vk_api):
-    answer = redis_db.get(event.user_id).decode("utf-8")
+    answer = redis_db.get(f'vk-{str(event.user_id)}').decode("utf-8")
     send_message(event.user_id, f'Правильный ответ был:\n{answer}')
     send_new_question(event, vk_api)
 
 
 def handle_solution_attempt(event, vk_api):
-    answer = redis_db.get('vk-'+str(event.user_id)).decode("utf-8")
+    answer = redis_db.get(f'vk-{str(event.user_id)}').decode("utf-8")
     breaking_points = ['.', '(', '-']
     for breaking_point in breaking_points:
         if breaking_point in answer:
