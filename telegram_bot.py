@@ -2,7 +2,8 @@ import os
 import random
 import logging
 import redis
-from get_questions_from_file import get_questions_for_qiuz
+from answer_check import check_answer
+from get_questions import get_questions_for_qiuz
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import (Updater, CommandHandler, MessageHandler,
                           RegexHandler, Filters,
@@ -35,11 +36,7 @@ def handle_new_question_request(update: Update, context: CallbackContext):
 
 def handle_solution_attempt(update: Update, context: CallbackContext):
     answer = redis_db.get(f'tg-{str(update.message.from_user["id"])}').decode("utf-8")
-    breaking_points = ['.', '(', '-']
-    for breaking_point in breaking_points:
-        if breaking_point in answer:
-            answer = answer[:answer.find(breaking_point)]
-    if update.message.text.lower() == answer.lower():
+    if update.message.text.lower() == check_answer(answer).lower():
         update.message.reply_text('Правильно! Поздравляю! Для следующего вопроса\
                                   нажми «Новый вопрос»')
         return CHOOSING
@@ -68,7 +65,7 @@ if __name__ == '__main__':
                        ['Мой счёт']]
     reply_markup = ReplyKeyboardMarkup(custom_keyboard)
     updater = Updater(os.environ['TELEGRAM_TOKEN'])
-    questions_for_quiz = get_questions_for_qiuz(os.environ['PATH_TO_FILE'])
+    questions_for_quiz = get_questions_for_qiuz(os.environ['PATH_TO_CATALOG'])
     redis_db = redis.Redis(host=os.environ['REDIS_HOST'],
                            port=os.environ['REDIS_PORT'],
                            db=0,

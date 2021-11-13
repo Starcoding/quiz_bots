@@ -2,7 +2,8 @@ import os
 import random
 import vk_api as vk
 import redis
-from get_questions_from_file import get_questions_for_qiuz
+from answer_check import check_answer
+from get_questions import get_questions_for_qiuz
 from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 from vk_api.longpoll import VkLongPoll, VkEventType
 
@@ -30,11 +31,7 @@ def give_up(event, vk_api):
 
 def handle_solution_attempt(event, vk_api):
     answer = redis_db.get(f'vk-{str(event.user_id)}').decode("utf-8")
-    breaking_points = ['.', '(', '-']
-    for breaking_point in breaking_points:
-        if breaking_point in answer:
-            answer = answer[:answer.find(breaking_point)]
-    if event.text.lower() == answer.lower():
+    if event.text.lower() == check_answer(answer).lower():
         send_message(event.user_id, 'Правильно! Поздравляю! Для следующего \
                      вопроса нажми «Новый вопрос»')
     else:
@@ -42,7 +39,7 @@ def handle_solution_attempt(event, vk_api):
 
 
 if __name__ == "__main__":
-    questions_for_quiz = get_questions_for_qiuz(os.environ['PATH_TO_FILE'])
+    questions_for_quiz = get_questions_for_qiuz(os.environ['PATH_TO_CATALOG'])
     redis_db = redis.Redis(host=os.environ['REDIS_HOST'],
                            port=os.environ['REDIS_PORT'],
                            db=0,
