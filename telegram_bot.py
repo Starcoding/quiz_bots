@@ -29,7 +29,7 @@ def help_command(update: Update, context: CallbackContext) -> None:
 def handle_new_question_request(update: Update, context: CallbackContext):
     question = random.choice(questions_for_quiz)
     redis_db.set(f'tg-{str(update.message.from_user["id"])}',
-                 str(question['answer']))
+                 question['answer'])
     update.message.reply_text(f'Новый вопрос:\n{question["question"]}')
     return ANSWERING
 

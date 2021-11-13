@@ -19,7 +19,7 @@ def send_message(user_id, message):
 
 def send_new_question(event, vk_api):
     question = random.choice(questions_for_quiz)
-    redis_db.set(f'vk-{str(event.user_id)}', str(question['answer']))
+    redis_db.set(f'vk-{str(event.user_id)}', question['answer'])
     send_message(event.user_id, f'Новый вопрос:\n{question["question"]}')
 
 
